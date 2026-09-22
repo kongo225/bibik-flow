@@ -1,6 +1,7 @@
 import { getDatabase } from './database';
 import { BIBLE_BOOKS } from './seed/booksData';
 import { SAMPLE_VERSES } from './seed/sampleVerses';
+import { STRONG_LEXICON_SAMPLE, VERSE_WORDS_SAMPLE } from './seed/strongData';
 
 export const seedDatabase = async (): Promise<void> => {
   const db = await getDatabase();
@@ -50,5 +51,21 @@ export const seedDatabase = async (): Promise<void> => {
     );
   }
 
-  console.log('Database seeded with books and initial verses!');
+  // 4. Insert Strong Lexicon entries
+  for (const s of STRONG_LEXICON_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO strong_lexicon (strong_id, original, transliteration, pronunciation, definition_fr, usage_fr) VALUES (?, ?, ?, ?, ?, ?);`,
+      [s.strong_id, s.original, s.transliteration, s.pronunciation, s.definition_fr, s.usage_fr]
+    );
+  }
+
+  // 5. Insert Verse Words mapping
+  for (const vw of VERSE_WORDS_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO verse_words (version_id, book_id, chapter, verse, position, word, strong_id) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+      [vw.version_id, vw.book_id, vw.chapter, vw.verse, vw.position, vw.word, vw.strong_id]
+    );
+  }
+
+  console.log('Database seeded with books, verses, and Strong lexicon!');
 };
