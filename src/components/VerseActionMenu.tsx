@@ -3,18 +3,25 @@ import { View, Text, StyleSheet, TouchableOpacity, Share } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Verse } from '../data/repositories/bibleRepository';
 import { bibleService } from '../services/bibleService';
-import { Share2, Bookmark } from 'lucide-react-native';
+import { Share2, Bookmark, BookOpen } from 'lucide-react-native';
 
 interface VerseActionMenuProps {
   verse: Verse | null;
   bookName: string;
   onClose: () => void;
   onRefresh: () => void;
+  onOpenCommentary?: () => void;
 }
 
 const HIGHLIGHT_COLORS = ['#FEF08A', '#BBF7D0', '#BFDBFE', '#FBCFE8', '#FED7AA'];
 
-export const VerseActionMenu: React.FC<VerseActionMenuProps> = ({ verse, bookName, onClose, onRefresh }) => {
+export const VerseActionMenu: React.FC<VerseActionMenuProps> = ({
+  verse,
+  bookName,
+  onClose,
+  onRefresh,
+  onOpenCommentary,
+}) => {
   const theme = useTheme();
 
   if (!verse) return null;
@@ -72,6 +79,13 @@ export const VerseActionMenu: React.FC<VerseActionMenuProps> = ({ verse, bookNam
           <Bookmark size={20} color={theme.colors.text} />
           <Text style={[styles.actionLabel, { color: theme.colors.text }]}>Favori</Text>
         </TouchableOpacity>
+
+        {onOpenCommentary && (
+          <TouchableOpacity style={styles.actionBtn} onPress={onOpenCommentary}>
+            <BookOpen size={20} color={theme.colors.text} />
+            <Text style={[styles.actionLabel, { color: theme.colors.text }]}>Commentaire</Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity style={styles.actionBtn} onPress={onClose}>
           <Text style={[styles.actionLabel, { color: theme.colors.accent, fontWeight: 'bold' }]}>Fermer</Text>

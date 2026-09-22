@@ -11,6 +11,7 @@ import { Book, Verse, Highlight, BibleVersion } from '../data/repositories/bible
 import { BookPicker } from '../components/BookPicker';
 import { ReadingSettingsModal } from '../components/ReadingSettingsModal';
 import { VerseActionMenu } from '../components/VerseActionMenu';
+import { CommentarySheet } from '../components/CommentarySheet';
 import { MiniAudioPlayer } from '../components/MiniAudioPlayer';
 import { AudioPlayerModal } from '../components/AudioPlayerModal';
 import { ChevronLeft, ChevronRight, SlidersHorizontal, BookOpen, Layers, Volume2 } from 'lucide-react-native';
@@ -38,6 +39,7 @@ export const BibleScreen = () => {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [versions, setVersions] = useState<BibleVersion[]>([]);
   const [selectedVerse, setSelectedVerse] = useState<Verse | null>(null);
+  const [commentaryVerse, setCommentaryVerse] = useState<Verse | null>(null);
 
   // Modals
   const [bookPickerVisible, setBookPickerVisible] = useState(false);
@@ -279,6 +281,17 @@ export const BibleScreen = () => {
         bookName={book?.name || ''}
         onClose={() => setSelectedVerse(null)}
         onRefresh={fetchChapterData}
+        onOpenCommentary={() => {
+          setCommentaryVerse(selectedVerse);
+          setSelectedVerse(null);
+        }}
+      />
+
+      {/* Commentary Bottom Sheet */}
+      <CommentarySheet
+        verse={commentaryVerse}
+        bookName={book?.name || ''}
+        onClose={() => setCommentaryVerse(null)}
       />
     </View>
   );

@@ -4,6 +4,13 @@ import { SAMPLE_VERSES } from './seed/sampleVerses';
 import { STRONG_LEXICON_SAMPLE, VERSE_WORDS_SAMPLE } from './seed/strongData';
 import { VERSE_OF_DAY_SAMPLE } from './seed/verseOfDayData';
 import { READING_PLANS_SAMPLE } from './seed/readingPlansData';
+import {
+  COMMENTARIES_SAMPLE,
+  COMMENTARY_ENTRIES_SAMPLE,
+  DICTIONARY_SAMPLE,
+  TIMELINES_SAMPLE,
+  TIMELINE_EVENTS_SAMPLE,
+} from './seed/studyData';
 
 export const seedDatabase = async (): Promise<void> => {
   const db = await getDatabase();
@@ -46,7 +53,6 @@ export const seedDatabase = async (): Promise<void> => {
       [v.version_id, v.book_id, v.chapter, v.verse, v.text]
     );
 
-    // Also populate FTS table
     await db.runAsync(
       `INSERT INTO verses_fts (text) VALUES (?);`,
       [v.text]
@@ -92,5 +98,43 @@ export const seedDatabase = async (): Promise<void> => {
     }
   }
 
-  console.log('Database seeded with books, verses, Strong lexicon, Verse of Day, and Reading Plans!');
+  // 8. Insert Commentaries
+  for (const c of COMMENTARIES_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO commentaries (id, name, author, language, is_downloaded) VALUES (?, ?, ?, ?, ?);`,
+      [c.id, c.name, c.author, c.language, c.is_downloaded]
+    );
+  }
+
+  for (const ce of COMMENTARY_ENTRIES_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO commentary_entries (commentary_id, book_id, chapter, verse_start, verse_end, text) VALUES (?, ?, ?, ?, ?, ?);`,
+      [ce.commentary_id, ce.book_id, ce.chapter, ce.verse_start, ce.verse_end, ce.text]
+    );
+  }
+
+  // 9. Insert Dictionary entries
+  for (const dict of DICTIONARY_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO dictionary_entries (id, term, category, definition, related_refs) VALUES (?, ?, ?, ?, ?);`,
+      [dict.id, dict.term, dict.category, dict.definition, dict.related_refs]
+    );
+  }
+
+  // 10. Insert Timelines & Events
+  for (const tl of TIMELINES_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO timelines (id, title, description) VALUES (?, ?, ?);`,
+      [tl.id, tl.title, tl.description]
+    );
+  }
+
+  for (const tle of TIMELINE_EVENTS_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO timeline_events (id, timeline_id, title, description, date_label, year_start, year_end, era, refs, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+      [tle.id, tle.timeline_id, tle.title, tle.description, tle.date_label, tle.year_start, tle.year_end, tle.era, tle.refs, tle.category]
+    );
+  }
+
+  console.log('Database seeded with complete Phase 5 study content!');
 };

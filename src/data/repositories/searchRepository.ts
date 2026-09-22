@@ -27,10 +27,10 @@ export const searchRepository = {
     let sql = `
       SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
       FROM verses_fts fts
-      JOIN verses v ON fts.rowid = v.rowid OR fts.text = v.text
+      JOIN verses v ON fts.rowid = v.rowid
       JOIN books b ON v.book_id = b.id
       JOIN book_names bn ON b.id = bn.book_id
-      WHERE fts.text MATCH ? AND v.version_id = ? AND bn.language = ?
+      WHERE verses_fts MATCH ? AND v.version_id = ? AND bn.language = ?
     `;
 
     const params: (string | number)[] = [sanitizedQuery, versionId, language];
@@ -45,7 +45,7 @@ export const searchRepository = {
     try {
       return await db.getAllAsync<SearchResult>(sql, params);
     } catch (e) {
-      // Fallback to LIKE if FTS query syntax error
+      // Fallback to LIKE query if FTS syntax error
       let fallbackSql = `
         SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
         FROM verses v
@@ -67,7 +67,6 @@ export const searchRepository = {
     const db = await getDatabase();
     const trimmed = query.trim();
 
-    // Match patterns like "Jean 3:16", "Jn 3:16", "Gen 1", "Genese 1:1"
     const match = trimmed.match(/^([1-3]?\s*[a-zA-Zà-ÿÀ-Ÿ]+)\s+(\d+)(?::(\d+))?$/i);
     if (!match) return null;
 
