@@ -1,18 +1,32 @@
-import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
 import { seedDatabase } from './seedDatabase';
 
 const DB_NAME = 'bibleapp.db';
 
-let dbInstance: SQLite.SQLiteDatabase | null = null;
+let dbInstance: any = null;
 
-export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
+export const getDatabase = async (): Promise<any> => {
+  if (Platform.OS === 'web') {
+    return {
+      execAsync: async () => {},
+      runAsync: async () => {},
+      getAllAsync: async () => [],
+      getFirstAsync: async () => null,
+    };
+  }
+
   if (!dbInstance) {
+    const SQLite = require('expo-sqlite');
     dbInstance = await SQLite.openDatabaseAsync(DB_NAME);
   }
   return dbInstance;
 };
 
 export const initDatabase = async (): Promise<void> => {
+  if (Platform.OS === 'web') {
+    return;
+  }
+
   const db = await getDatabase();
 
   await db.execAsync(`

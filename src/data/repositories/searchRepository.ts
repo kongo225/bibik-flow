@@ -22,18 +22,17 @@ export const searchRepository = {
     language = 'fr'
   ): Promise<SearchResult[]> {
     const db = await getDatabase();
-    const sanitizedQuery = `${query.trim()}*`;
+    const sanitizedQuery = `%${query.trim()}%`;
 
     let sql = `
       SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
-      FROM verses_fts fts
-      JOIN verses v ON fts.rowid = v.rowid
+      FROM verses v
       JOIN books b ON v.book_id = b.id
       JOIN book_names bn ON b.id = bn.book_id
-      WHERE verses_fts MATCH ? AND v.version_id = ? AND bn.language = ?
+      WHERE v.version_id = ? AND bn.language = ? AND v.text LIKE ?
     `;
 
-    const params: (string | number)[] = [sanitizedQuery, versionId, language];
+    const params: (string | number)[] = [versionId, language, sanitizedQuery];
 
     if (testament !== 'ALL') {
       sql += ` AND b.testament = ?`;
@@ -42,25 +41,7 @@ export const searchRepository = {
 
     sql += ` ORDER BY b.order_index ASC, v.chapter ASC, v.verse ASC LIMIT 100;`;
 
-    try {
-      return await db.getAllAsync<SearchResult>(sql, params);
-    } catch (e) {
-      // Fallback to LIKE query if FTS syntax error
-      let fallbackSql = `
-        SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
-        FROM verses v
-        JOIN books b ON v.book_id = b.id
-        JOIN book_names bn ON b.id = bn.book_id
-        WHERE v.version_id = ? AND bn.language = ? AND v.text LIKE ?
-      `;
-      const fallbackParams: (string | number)[] = [versionId, language, `%${query.trim()}%`];
-      if (testament !== 'ALL') {
-        fallbackSql += ` AND b.testament = ?`;
-        fallbackParams.push(testament);
-      }
-      fallbackSql += ` ORDER BY b.order_index ASC, v.chapter ASC, v.verse ASC LIMIT 100;`;
-      return db.getAllAsync<SearchResult>(fallbackSql, fallbackParams);
-    }
+    return db.getAllAsync(sql, params) as Promise<SearchResult[]>;
   },
 
   async parseReference(query: string, language = 'fr'): Promise<{ book_id: number; book_name: string; chapter: number; verse?: number } | null> {
@@ -74,14 +55,14 @@ export const searchRepository = {
     const chapter = parseInt(match[2], 10);
     const verse = match[3] ? parseInt(match[3], 10) : undefined;
 
-    const book = await db.getFirstAsync<{ id: number; name: string }>(
+    const book = (await db.getFirstAsync(
       `SELECT b.id, bn.name
        FROM books b
        JOIN book_names bn ON b.id = bn.book_id
        WHERE bn.language = ? AND (bn.name LIKE ? OR bn.abbreviation LIKE ?)
        LIMIT 1;`,
       [language, `${bookSearch}%`, `${bookSearch}%`]
-    );
+    )) as { id: number; name: string } | null;
 
     if (!book) return null;
 
@@ -95,15 +76,15 @@ export const searchRepository = {
 
   async getStrongEntry(strongId: string): Promise<StrongEntry | null> {
     const db = await getDatabase();
-    return db.getFirstAsync<StrongEntry>(
+    return db.getFirstAsync(
       `SELECT * FROM strong_lexicon WHERE strong_id = ?;`,
       [strongId]
-    );
+    ) as Promise<StrongEntry | null>;
   },
 
   async getStrongOccurrences(strongId: string, language = 'fr'): Promise<SearchResult[]> {
     const db = await getDatabase();
-    return db.getAllAsync<SearchResult>(
+    return db.getAllAsync(
       `SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
        FROM verse_words vw
        JOIN verses v ON vw.version_id = v.version_id AND vw.book_id = v.book_id AND vw.chapter = v.chapter AND vw.verse = v.verse
@@ -112,6 +93,6 @@ export const searchRepository = {
        WHERE vw.strong_id = ? AND bn.language = ?
        ORDER BY b.order_index ASC, v.chapter ASC, v.verse ASC;`,
       [strongId, language]
-    );
+    ) as Promise<SearchResult[]>;
   },
 };

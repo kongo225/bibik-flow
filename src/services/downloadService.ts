@@ -44,7 +44,7 @@ export const AVAILABLE_PACKAGES: RemoteVersionPackage[] = [
 export const downloadService = {
   async getInstalledVersions(): Promise<BibleVersion[]> {
     const db = await getDatabase();
-    return db.getAllAsync<BibleVersion>('SELECT * FROM versions;');
+    return db.getAllAsync('SELECT * FROM versions;') as Promise<BibleVersion[]>;
   },
 
   async downloadVersionPackage(packageItem: RemoteVersionPackage): Promise<void> {

@@ -16,7 +16,7 @@ export const seedDatabase = async (): Promise<void> => {
   const db = await getDatabase();
 
   // Check if versions already exist
-  const existingVersions = await db.getAllAsync<{ id: string }>('SELECT id FROM versions;');
+  const existingVersions = (await db.getAllAsync('SELECT id FROM versions;')) as { id: string }[];
   if (existingVersions.length > 0) {
     return; // Already seeded
   }

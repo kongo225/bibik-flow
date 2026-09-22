@@ -10,32 +10,30 @@ export const verseOfDayService = {
   async getTodayVerse(versionId = 'lsg', language = 'fr'): Promise<VerseOfDayResult | null> {
     const db = await getDatabase();
 
-    // Deterministic selection based on day of year
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 0);
     const diff = now.getTime() - start.getTime();
     const oneDay = 1000 * 60 * 60 * 24;
     const dayOfYear = Math.floor(diff / oneDay);
 
-    // Default fallback verse if not found in db
-    let row = await db.getFirstAsync<{ book_id: number; chapter: number; verse: number }>(
+    let row = (await db.getFirstAsync(
       `SELECT book_id, chapter, verse FROM verse_of_day LIMIT 1 OFFSET ?;`,
       [dayOfYear % 6]
-    );
+    )) as { book_id: number; chapter: number; verse: number } | null;
 
     if (!row) {
-      row = { book_id: 43, chapter: 3, verse: 16 }; // Jean 3:16 default
+      row = { book_id: 43, chapter: 3, verse: 16 };
     }
 
-    const verseData = await db.getFirstAsync<Verse>(
+    const verseData = (await db.getFirstAsync(
       `SELECT version_id, book_id, chapter, verse, text FROM verses WHERE version_id = ? AND book_id = ? AND chapter = ? AND verse = ?;`,
       [versionId, row.book_id, row.chapter, row.verse]
-    );
+    )) as Verse | null;
 
-    const bookData = await db.getFirstAsync<{ name: string }>(
+    const bookData = (await db.getFirstAsync(
       `SELECT name FROM book_names WHERE book_id = ? AND language = ?;`,
       [row.book_id, language]
-    );
+    )) as { name: string } | null;
 
     if (!verseData) return null;
 

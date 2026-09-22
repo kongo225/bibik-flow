@@ -51,49 +51,49 @@ export interface Note {
 export const bibleRepository = {
   async getVersions(): Promise<BibleVersion[]> {
     const db = await getDatabase();
-    return db.getAllAsync<BibleVersion>('SELECT * FROM versions;');
+    return db.getAllAsync('SELECT * FROM versions;') as Promise<BibleVersion[]>;
   },
 
   async getBooks(language = 'fr'): Promise<Book[]> {
     const db = await getDatabase();
-    return db.getAllAsync<Book>(
+    return db.getAllAsync(
       `SELECT b.id, b.code, b.testament, b.chapters_count, b.order_index, bn.name, bn.abbreviation
        FROM books b
        JOIN book_names bn ON b.id = bn.book_id
        WHERE bn.language = ?
        ORDER BY b.order_index ASC;`,
       [language]
-    );
+    ) as Promise<Book[]>;
   },
 
   async getBook(bookId: number, language = 'fr'): Promise<Book | null> {
     const db = await getDatabase();
-    return db.getFirstAsync<Book>(
+    return db.getFirstAsync(
       `SELECT b.id, b.code, b.testament, b.chapters_count, b.order_index, bn.name, bn.abbreviation
        FROM books b
        JOIN book_names bn ON b.id = bn.book_id
        WHERE b.id = ? AND bn.language = ?;`,
       [bookId, language]
-    );
+    ) as Promise<Book | null>;
   },
 
   async getChapterVerses(versionId: string, bookId: number, chapter: number): Promise<Verse[]> {
     const db = await getDatabase();
-    return db.getAllAsync<Verse>(
+    return db.getAllAsync(
       `SELECT version_id, book_id, chapter, verse, text
        FROM verses
        WHERE version_id = ? AND book_id = ? AND chapter = ?
        ORDER BY verse ASC;`,
       [versionId, bookId, chapter]
-    );
+    ) as Promise<Verse[]>;
   },
 
   async getHighlights(versionId: string, bookId: number, chapter: number): Promise<Highlight[]> {
     const db = await getDatabase();
-    return db.getAllAsync<Highlight>(
+    return db.getAllAsync(
       `SELECT * FROM highlights WHERE version_id = ? AND book_id = ? AND chapter = ?;`,
       [versionId, bookId, chapter]
-    );
+    ) as Promise<Highlight[]>;
   },
 
   async setHighlight(versionId: string, bookId: number, chapter: number, verse: number, color: string): Promise<void> {
@@ -114,10 +114,10 @@ export const bibleRepository = {
 
   async getNotes(bookId: number, chapter: number): Promise<Note[]> {
     const db = await getDatabase();
-    return db.getAllAsync<Note>(
+    return db.getAllAsync(
       `SELECT * FROM notes WHERE book_id = ? AND chapter = ?;`,
       [bookId, chapter]
-    );
+    ) as Promise<Note[]>;
   },
 
   async saveNote(bookId: number, chapter: number, verse: number, content: string): Promise<void> {
@@ -132,15 +132,16 @@ export const bibleRepository = {
 
   async getBookmarks(): Promise<{ id: number; book_id: number; chapter: number; verse: number; created_at: string }[]> {
     const db = await getDatabase();
-    return db.getAllAsync('SELECT * FROM bookmarks ORDER BY created_at DESC;');
+    return db.getAllAsync('SELECT * FROM bookmarks ORDER BY created_at DESC;') as Promise<{ id: number; book_id: number; chapter: number; verse: number; created_at: string }[]>;
   },
 
   async toggleBookmark(bookId: number, chapter: number, verse: number): Promise<boolean> {
     const db = await getDatabase();
-    const existing = await db.getFirstAsync<{ id: number }>(
+    const existing = (await db.getFirstAsync(
       `SELECT id FROM bookmarks WHERE book_id = ? AND chapter = ? AND verse = ?;`,
       [bookId, chapter, verse]
-    );
+    )) as { id: number } | null;
+
     if (existing) {
       await db.runAsync(`DELETE FROM bookmarks WHERE id = ?;`, [existing.id]);
       return false;
