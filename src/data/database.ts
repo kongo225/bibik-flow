@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { seedDatabase } from './seedDatabase';
 
 const DB_NAME = 'bibleapp.db';
 
@@ -188,5 +189,5 @@ export const initDatabase = async (): Promise<void> => {
     );
   `);
 
-  console.log('Database initialized successfully');
+  await seedDatabase();
 };
