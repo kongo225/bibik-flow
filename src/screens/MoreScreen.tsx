@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../theme/ThemeProvider';
 import { useThemeStore } from '../store/useThemeStore';
 import { useRouter } from 'expo-router';
-import { BookOpen, Palette, Globe, Download, Info, ChevronRight } from 'lucide-react-native';
+import { Palette, Globe, Download, Info, ChevronRight } from 'lucide-react-native';
 
 export const MoreScreen = () => {
   const { t, i18n } = useTranslation();
@@ -13,7 +13,8 @@ export const MoreScreen = () => {
   const { themeMode, setThemeMode, accentColor, setAccentColor } = useThemeStore();
 
   const themes: ('light' | 'dark' | 'sepia' | 'amoled')[] = ['light', 'dark', 'sepia', 'amoled'];
-  const accents = ['#2563EB', '#10B981', '#8B5CF6', '#EF4444', '#F59E0B', '#D97706'];
+  // Palette mise à jour avec les couleurs officielles de la charte (#168BFF, #FFB800, #062B8F, etc.)
+  const accents = ['#168BFF', '#FFB800', '#062B8F', '#10B981', '#8B5CF6', '#EF4444'];
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === 'fr' ? 'en' : 'fr';
@@ -76,7 +77,7 @@ export const MoreScreen = () => {
 
       {/* Accent Color Section */}
       <View style={[styles.section, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Couleur d'accentuation</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Couleur d'accentuation (Charte)</Text>
         <View style={[styles.row, { marginTop: 8 }]}>
           {accents.map((color) => (
             <TouchableOpacity

@@ -31,30 +31,30 @@ export interface ThemeTokens {
   };
 }
 
-export const DEFAULT_ACCENT = '#2563EB'; // Royal Blue
+export const DEFAULT_ACCENT = '#168BFF'; // Bleu vibrant de la charte
 
 export const THEME_PALETTES: Record<ThemeMode, Omit<ThemeTokens['colors'], 'accent' | 'accentText'>> = {
   light: {
-    background: '#F8FAFC',
-    surface: '#FFFFFF',
-    surfaceVariant: '#F1F5F9',
-    text: '#0F172A',
-    textMuted: '#64748B',
-    border: '#E2E8F0',
-    verseNumber: '#94A3B8',
-    highlight: '#FEF08A',
+    background: '#F8FAFF', // Fond clair selon la charte
+    surface: '#FFFFFF', // Surface blanche selon la charte
+    surfaceVariant: '#EBF3FF',
+    text: '#062B8F', // Bleu profond pour le texte principal
+    textMuted: '#5272B6',
+    border: '#D2E3FC',
+    verseNumber: '#168BFF',
+    highlight: '#FFB800', // Jaune/Or de la charte pour les surlignages
     card: '#FFFFFF',
   },
   dark: {
-    background: '#0F172A',
-    surface: '#1E293B',
-    surfaceVariant: '#334155',
-    text: '#F8FAFC',
-    textMuted: '#94A3B8',
-    border: '#334155',
-    verseNumber: '#64748B',
-    highlight: '#854D0E',
-    card: '#1E293B',
+    background: '#04174D', // Variante sombre basée sur le bleu profond #062B8F
+    surface: '#062B8F',
+    surfaceVariant: '#0D3FB1',
+    text: '#F8FAFF',
+    textMuted: '#9EBFFA',
+    border: '#1540A8',
+    verseNumber: '#FFB800',
+    highlight: '#D99B00',
+    card: '#062B8F',
   },
   sepia: {
     background: '#FBF0D9',
@@ -64,19 +64,19 @@ export const THEME_PALETTES: Record<ThemeMode, Omit<ThemeTokens['colors'], 'acce
     textMuted: '#8C7A6B',
     border: '#E2D3B2',
     verseNumber: '#A08E7D',
-    highlight: '#FDE68A',
+    highlight: '#FFB800',
     card: '#F4E8C1',
   },
   amoled: {
     background: '#000000',
-    surface: '#121212',
-    surfaceVariant: '#1E1E1E',
+    surface: '#0A0A0A',
+    surfaceVariant: '#141414',
     text: '#FFFFFF',
     textMuted: '#A0A0A0',
-    border: '#2A2A2A',
-    verseNumber: '#666666',
-    highlight: '#854D0E',
-    card: '#121212',
+    border: '#222222',
+    verseNumber: '#FFB800',
+    highlight: '#D99B00',
+    card: '#0A0A0A',
   },
 };
 

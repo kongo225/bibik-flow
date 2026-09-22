@@ -1,9 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://nuojzvrubgqmzpemwmdv.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51b2p6dnJ1YmdxbXpwZW13bWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0OTYzOTAsImV4cCI6MjEwNTA3MjM5MH0.VT5E8JJS5iQTbK6DbS1xsruvwHMXmDsz_x0e3MTjVL8';
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn(
+    'Supabase configuration missing: EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY must be defined in your .env file.'
+  );
+}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -15,6 +19,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 export const supabaseSyncService = {
   async syncBookmarkToCloud(bookId: number, chapter: number, verse: number): Promise<void> {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
     try {
       await supabase.from('user_bookmarks').insert([
         {
@@ -35,6 +40,7 @@ export const supabaseSyncService = {
     verse: number,
     color: string
   ): Promise<void> {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
     try {
       await supabase.from('user_highlights').insert([
         {
@@ -51,6 +57,7 @@ export const supabaseSyncService = {
   },
 
   async syncNoteToCloud(bookId: number, chapter: number, verse: number, content: string): Promise<void> {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
     try {
       await supabase.from('user_notes').insert([
         {
