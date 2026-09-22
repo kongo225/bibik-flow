@@ -1,0 +1,64 @@
+{
+  "tabs": {
+    "home": "Accueil",
+    "bible": "Bible",
+    "search": "Rechercher",
+    "study": "Étudier",
+    "more": "Plus"
+  },
+  "home": {
+    "title": "Accueil",
+    "verse_of_the_day": "Verset du jour",
+    "continue_reading": "Continuer la lecture",
+    "daily_plan": "Plan du jour",
+    "quick_actions": "Raccourcis"
+  },
+  "bible": {
+    "title": "Sainte Bible",
+    "select_book": "Choisir un livre",
+    "select_chapter": "Choisir un chapitre",
+    "compare_versions": "Comparer les versions",
+    "version": "Version"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher un mot ou un passage...",
+    "recent_searches": "Recherches récentes",
+    "concordance": "Concordance Strong",
+    "dictionary": "Dictionnaire"
+  },
+  "study": {
+    "title": "Outils d'étude",
+    "reading_plans": "Plans de lecture",
+    "topical_plans": "Plans thématiques",
+    "timelines": "Chronologies",
+    "commentaries": "Commentaires",
+    "lexicon": "Lexique"
+  },
+  "more": {
+    "title": "Plus / Réglages",
+    "bookmarks": "Favoris",
+    "highlights": "Surlignages",
+    "notes": "Notes",
+    "downloads": "Téléchargements",
+    "settings": "Paramètres",
+    "appearance": "Apparence",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "audio": "Audio",
+    "about": "À propos",
+    "licenses": "Licences"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "sepia": "Sépia",
+    "amoled": "AMOLED",
+    "system": "Automatique (Système)"
+  },
+  "language": {
+    "french": "Français",
+    "english": "English",
+    "select_language": "Choisir la langue de l'application"
+  }
+}
