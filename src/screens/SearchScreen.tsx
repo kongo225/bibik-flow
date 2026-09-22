@@ -6,7 +6,7 @@ import { searchService } from '../services/searchService';
 import { SearchResult } from '../data/repositories/searchRepository';
 import { useReadingStore } from '../store/useReadingStore';
 import { StrongModal } from '../components/StrongModal';
-import { Search, X, BookOpen, ArrowRight } from 'lucide-react-native';
+import { Search, X, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export const SearchScreen = () => {
@@ -18,31 +18,45 @@ export const SearchScreen = () => {
   const [query, setQuery] = useState('');
   const [testament, setTestament] = useState<'ALL' | 'AT' | 'NT'>('ALL');
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedStrongId, setSelectedStrongId] = useState<string | null>(null);
 
-  const handleSearch = async (text: string) => {
-    setQuery(text);
+  const performSearch = async (text: string) => {
     if (!text.trim()) {
       setResults([]);
       return;
     }
 
-    setIsSearching(true);
-
-    // 1. Check if user typed a direct reference like "Jn 3:16"
+    // Check if user typed a direct verse reference (requires verse specifier or submit)
     const parsedRef = await searchService.parseReference(text, i18n.language);
-    if (parsedRef) {
-      setReadingPosition('lsg', parsedRef.book_id, parsedRef.chapter, parsedRef.verse || 1);
-      setIsSearching(false);
+    if (parsedRef && parsedRef.verse) {
+      setReadingPosition('lsg', parsedRef.book_id, parsedRef.chapter, parsedRef.verse);
       router.push('/(tabs)/bible');
       return;
     }
 
-    // 2. Keyword Search
+    // Keyword Search
     const data = await searchService.searchVerses(text, 'lsg', testament, i18n.language);
     setResults(data);
-    setIsSearching(false);
+  };
+
+  const handleTextChange = (text: string) => {
+    setQuery(text);
+    if (text.length > 2) {
+      performSearch(text);
+    } else if (!text.trim()) {
+      setResults([]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!query.trim()) return;
+    const parsedRef = await searchService.parseReference(query, i18n.language);
+    if (parsedRef) {
+      setReadingPosition('lsg', parsedRef.book_id, parsedRef.chapter, parsedRef.verse || 1);
+      router.push('/(tabs)/bible');
+    } else {
+      performSearch(query);
+    }
   };
 
   const handleSelectVerse = (bookId: number, chapter: number, verse: number) => {
@@ -60,11 +74,13 @@ export const SearchScreen = () => {
           placeholder={t('search.placeholder')}
           placeholderTextColor={theme.colors.textMuted}
           value={query}
-          onChangeText={handleSearch}
+          onChangeText={handleTextChange}
+          onSubmitEditing={handleSubmit}
           autoCorrect={false}
+          returnKeyType="search"
         />
         {query.length > 0 && (
-          <TouchableOpacity onPress={() => handleSearch('')}>
+          <TouchableOpacity onPress={() => handleTextChange('')}>
             <X size={20} color={theme.colors.textMuted} />
           </TouchableOpacity>
         )}
@@ -81,7 +97,7 @@ export const SearchScreen = () => {
             ]}
             onPress={() => {
               setTestament(tFilter);
-              if (query) handleSearch(query);
+              if (query) performSearch(query);
             }}
           >
             <Text

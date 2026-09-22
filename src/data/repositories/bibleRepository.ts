@@ -1,4 +1,5 @@
 import { getDatabase } from '../database';
+import { supabaseSyncService } from '../../services/supabaseClient';
 
 export interface BibleVersion {
   id: string;
@@ -106,6 +107,8 @@ export const bibleRepository = {
         `INSERT INTO highlights (version_id, book_id, chapter, verse, color, created_at) VALUES (?, ?, ?, ?, ?, ?);`,
         [versionId, bookId, chapter, verse, color, new Date().toISOString()]
       );
+      // Cloud sync to Supabase
+      supabaseSyncService.syncHighlightToCloud(versionId, bookId, chapter, verse, color);
     }
   },
 
@@ -123,6 +126,8 @@ export const bibleRepository = {
       `INSERT INTO notes (book_id, chapter, verse, content, created_at) VALUES (?, ?, ?, ?, ?);`,
       [bookId, chapter, verse, content, new Date().toISOString()]
     );
+    // Cloud sync to Supabase
+    supabaseSyncService.syncNoteToCloud(bookId, chapter, verse, content);
   },
 
   async getBookmarks(): Promise<{ id: number; book_id: number; chapter: number; verse: number; created_at: string }[]> {
@@ -144,6 +149,8 @@ export const bibleRepository = {
         `INSERT INTO bookmarks (book_id, chapter, verse, created_at) VALUES (?, ?, ?, ?);`,
         [bookId, chapter, verse, new Date().toISOString()]
       );
+      // Cloud sync to Supabase
+      supabaseSyncService.syncBookmarkToCloud(bookId, chapter, verse);
       return true;
     }
   },
