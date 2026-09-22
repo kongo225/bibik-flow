@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../theme/ThemeProvider';
 import { useReadingStore } from '../store/useReadingStore';
 import { useThemeStore } from '../store/useThemeStore';
+import { useAudioStore } from '../store/useAudioStore';
+import { audioService } from '../services/audioService';
 import { bibleService } from '../services/bibleService';
 import { Book, Verse, Highlight, BibleVersion } from '../data/repositories/bibleRepository';
 import { BookPicker } from '../components/BookPicker';
 import { ReadingSettingsModal } from '../components/ReadingSettingsModal';
 import { VerseActionMenu } from '../components/VerseActionMenu';
-import { ChevronLeft, ChevronRight, SlidersHorizontal, BookOpen, Layers } from 'lucide-react-native';
+import { MiniAudioPlayer } from '../components/MiniAudioPlayer';
+import { AudioPlayerModal } from '../components/AudioPlayerModal';
+import { ChevronLeft, ChevronRight, SlidersHorizontal, BookOpen, Layers, Volume2 } from 'lucide-react-native';
 
 export const BibleScreen = () => {
   const { t, i18n } = useTranslation();
@@ -26,6 +30,8 @@ export const BibleScreen = () => {
     setReadingPosition,
     loadReadingPosition,
   } = useReadingStore();
+
+  const { currentVerseNum, activeBookId, activeChapter } = useAudioStore();
 
   const [book, setBook] = useState<Book | null>(null);
   const [verses, setVerses] = useState<Verse[]>([]);
@@ -88,6 +94,12 @@ export const BibleScreen = () => {
     }
   };
 
+  const handlePlayAudioChapter = () => {
+    if (verses.length > 0 && book) {
+      audioService.playChapter(verses, book.name, 1, i18n.language);
+    }
+  };
+
   const getVerseHighlight = (verseNum: number) => {
     return highlights.find((h) => h.verse === verseNum)?.color;
   };
@@ -113,6 +125,10 @@ export const BibleScreen = () => {
         </TouchableOpacity>
 
         <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.iconBtn} onPress={handlePlayAudioChapter}>
+            <Volume2 size={20} color={theme.colors.accent} />
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[
               styles.versionBadge,
@@ -147,6 +163,8 @@ export const BibleScreen = () => {
           verses.map((v) => {
             const highlightColor = getVerseHighlight(v.verse);
             const isSelected = selectedVerse?.verse === v.verse;
+            const isAudioActiveVerse =
+              activeBookId === currentBookId && activeChapter === currentChapter && currentVerseNum === v.verse;
             const altVerse = compareVerses.find((cv) => cv.verse === v.verse);
 
             return (
@@ -157,6 +175,7 @@ export const BibleScreen = () => {
                 style={[
                   styles.verseContainer,
                   highlightColor ? { backgroundColor: highlightColor } : null,
+                  isAudioActiveVerse ? { backgroundColor: theme.colors.surfaceVariant, borderLeftWidth: 3, borderLeftColor: theme.colors.accent } : null,
                   isSelected ? { backgroundColor: theme.colors.surfaceVariant, borderRadius: 8 } : null,
                 ]}
               >
@@ -205,6 +224,12 @@ export const BibleScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Floating Mini Audio Player */}
+      <MiniAudioPlayer />
+
+      {/* Full Screen Audio Modal */}
+      <AudioPlayerModal />
 
       {/* Book / Chapter Picker Modal */}
       <BookPicker
@@ -300,7 +325,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 80,
+    paddingBottom: 110,
   },
   emptyContainer: {
     paddingVertical: 40,
