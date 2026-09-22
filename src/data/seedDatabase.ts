@@ -2,6 +2,8 @@ import { getDatabase } from './database';
 import { BIBLE_BOOKS } from './seed/booksData';
 import { SAMPLE_VERSES } from './seed/sampleVerses';
 import { STRONG_LEXICON_SAMPLE, VERSE_WORDS_SAMPLE } from './seed/strongData';
+import { VERSE_OF_DAY_SAMPLE } from './seed/verseOfDayData';
+import { READING_PLANS_SAMPLE } from './seed/readingPlansData';
 
 export const seedDatabase = async (): Promise<void> => {
   const db = await getDatabase();
@@ -67,5 +69,28 @@ export const seedDatabase = async (): Promise<void> => {
     );
   }
 
-  console.log('Database seeded with books, verses, and Strong lexicon!');
+  // 6. Insert Verse of the Day seed
+  for (const vod of VERSE_OF_DAY_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO verse_of_day (date, book_id, chapter, verse) VALUES (?, ?, ?, ?);`,
+      [`2025-01-0${vod.day_of_year}`, vod.book_id, vod.chapter, vod.verse]
+    );
+  }
+
+  // 7. Insert Reading Plans seed
+  for (const plan of READING_PLANS_SAMPLE) {
+    await db.runAsync(
+      `INSERT INTO reading_plans (id, title, duration_days, description, type) VALUES (?, ?, ?, ?, ?);`,
+      [plan.id, plan.title, plan.duration_days, plan.description, plan.type]
+    );
+
+    for (const dayItem of plan.days) {
+      await db.runAsync(
+        `INSERT INTO reading_plan_days (plan_id, day, readings) VALUES (?, ?, ?);`,
+        [plan.id, dayItem.day, JSON.stringify(dayItem.readings)]
+      );
+    }
+  }
+
+  console.log('Database seeded with books, verses, Strong lexicon, Verse of Day, and Reading Plans!');
 };

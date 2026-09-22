@@ -3,14 +3,19 @@ import { Stack } from 'expo-router';
 import { ThemeProvider, useTheme } from '../src/theme/ThemeProvider';
 import '../src/i18n';
 import { initDatabase } from '../src/data/database';
+import { notificationService } from '../src/services/notificationService';
 
 function RootLayoutNav() {
   const theme = useTheme();
 
   useEffect(() => {
-    initDatabase().catch((err) => {
-      console.error('Failed to initialize database', err);
-    });
+    initDatabase()
+      .then(() => {
+        notificationService.scheduleDailyVerseNotification(8, 0);
+      })
+      .catch((err) => {
+        console.error('Failed to initialize database', err);
+      });
   }, []);
 
   return (

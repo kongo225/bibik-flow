@@ -22,17 +22,18 @@ export const searchRepository = {
     language = 'fr'
   ): Promise<SearchResult[]> {
     const db = await getDatabase();
-    const sanitizedQuery = `%${query.trim()}%`;
+    const sanitizedQuery = `${query.trim()}*`;
 
     let sql = `
       SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
-      FROM verses v
+      FROM verses_fts fts
+      JOIN verses v ON fts.rowid = v.rowid OR fts.text = v.text
       JOIN books b ON v.book_id = b.id
       JOIN book_names bn ON b.id = bn.book_id
-      WHERE v.version_id = ? AND bn.language = ? AND v.text LIKE ?
+      WHERE fts.text MATCH ? AND v.version_id = ? AND bn.language = ?
     `;
 
-    const params: (string | number)[] = [versionId, language, sanitizedQuery];
+    const params: (string | number)[] = [sanitizedQuery, versionId, language];
 
     if (testament !== 'ALL') {
       sql += ` AND b.testament = ?`;
@@ -41,7 +42,25 @@ export const searchRepository = {
 
     sql += ` ORDER BY b.order_index ASC, v.chapter ASC, v.verse ASC LIMIT 100;`;
 
-    return db.getAllAsync<SearchResult>(sql, params);
+    try {
+      return await db.getAllAsync<SearchResult>(sql, params);
+    } catch (e) {
+      // Fallback to LIKE if FTS query syntax error
+      let fallbackSql = `
+        SELECT v.version_id, v.book_id, v.chapter, v.verse, v.text, bn.name as book_name
+        FROM verses v
+        JOIN books b ON v.book_id = b.id
+        JOIN book_names bn ON b.id = bn.book_id
+        WHERE v.version_id = ? AND bn.language = ? AND v.text LIKE ?
+      `;
+      const fallbackParams: (string | number)[] = [versionId, language, `%${query.trim()}%`];
+      if (testament !== 'ALL') {
+        fallbackSql += ` AND b.testament = ?`;
+        fallbackParams.push(testament);
+      }
+      fallbackSql += ` ORDER BY b.order_index ASC, v.chapter ASC, v.verse ASC LIMIT 100;`;
+      return db.getAllAsync<SearchResult>(fallbackSql, fallbackParams);
+    }
   },
 
   async parseReference(query: string, language = 'fr'): Promise<{ book_id: number; book_name: string; chapter: number; verse?: number } | null> {
