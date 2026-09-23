@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
-import { ArrowLeft, ShieldCheck, Heart, Info, FileText } from 'lucide-react-native';
+import { ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export const AboutScreen = () => {
@@ -20,9 +20,9 @@ export const AboutScreen = () => {
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-          <Text style={[styles.appName, { color: theme.colors.accent }]}>BibleApp v1.0.0</Text>
+          <Text style={[styles.appName, { color: theme.colors.accent }]}>Rhema v1.0.0</Text>
           <Text style={[styles.desc, { color: theme.colors.text }]}>
-            Application biblique francophone, complète, moderne et 100% fonctionnelle hors-ligne.
+            Application biblique francophone complète, moderne, inspirée et 100% fonctionnelle hors-ligne.
           </Text>
         </View>
 
@@ -46,7 +46,7 @@ export const AboutScreen = () => {
             <Text style={[styles.itemTitle, { color: theme.colors.text }]}>100% Local & Respect de la vie privée</Text>
           </View>
           <Text style={[styles.subText, { color: theme.colors.textMuted, marginTop: 6 }]}>
-            Vos notes, surlignages et données de lecture sont stockés exclusivement sur votre appareil et ne sont transmis à aucun serveur.
+            Vos notes, surlignages et données de lecture sont stockés exclusivement sur votre appareil et synchronisés de façon sécurisée.
           </Text>
         </View>
       </ScrollView>

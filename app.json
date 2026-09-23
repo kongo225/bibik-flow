@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "BibleApp",
-    "slug": "bibleapp",
+    "name": "Rhema",
+    "slug": "rhema",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "bibleapp",
+    "scheme": "rhema",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bibleapp.francophone",
+      "bundleIdentifier": "com.rhema.francophone",
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "L'application utilise le microphone pour les fonctionnalités vocales.",
@@ -17,7 +17,7 @@
       }
     },
     "android": {
-      "package": "com.bibleapp.francophone",
+      "package": "com.rhema.francophone",
       "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
