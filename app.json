@@ -8,9 +8,17 @@
     "scheme": "bibleapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bibleapp.francophone",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "L'application utilise le microphone pour les fonctionnalités vocales.",
+        "NSCameraUsageDescription": "L'application utilise l'appareil photo pour personnaliser les fonds d'images des versets."
+      }
     },
     "android": {
+      "package": "com.bibleapp.francophone",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
