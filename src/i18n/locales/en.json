@@ -1,0 +1,64 @@
+{
+  "tabs": {
+    "home": "Home",
+    "bible": "Bible",
+    "search": "Search",
+    "study": "Study",
+    "more": "More"
+  },
+  "home": {
+    "title": "Home",
+    "verse_of_the_day": "Verse of the Day",
+    "continue_reading": "Continue Reading",
+    "daily_plan": "Daily Plan",
+    "quick_actions": "Quick Actions"
+  },
+  "bible": {
+    "title": "Holy Bible",
+    "select_book": "Select Book",
+    "select_chapter": "Select Chapter",
+    "compare_versions": "Compare Versions",
+    "version": "Version"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search a word or reference...",
+    "recent_searches": "Recent Searches",
+    "concordance": "Strong's Concordance",
+    "dictionary": "Dictionary"
+  },
+  "study": {
+    "title": "Study Tools",
+    "reading_plans": "Reading Plans",
+    "topical_plans": "Topical Plans",
+    "timelines": "Timelines",
+    "commentaries": "Commentaries",
+    "lexicon": "Lexicon"
+  },
+  "more": {
+    "title": "More / Settings",
+    "bookmarks": "Bookmarks",
+    "highlights": "Highlights",
+    "notes": "Notes",
+    "downloads": "Downloads",
+    "settings": "Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "notifications": "Notifications",
+    "audio": "Audio",
+    "about": "About",
+    "licenses": "Licenses"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "sepia": "Sepia",
+    "amoled": "AMOLED",
+    "system": "System Default"
+  },
+  "language": {
+    "french": "Français",
+    "english": "English",
+    "select_language": "Select Application Language"
+  }
+}
